@@ -3,7 +3,7 @@ package quickpoll.controller
 import javax.inject.Inject
 
 import org.springframework.http.{HttpHeaders, HttpStatus, ResponseEntity}
-import org.springframework.web.bind.annotation.{RequestBody, RequestMapping, RequestMethod, RestController}
+import org.springframework.web.bind.annotation._
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import quickpoll.domain.Poll
 import quickpoll.repository.PollRepository
@@ -28,4 +28,24 @@ class PollController {
         new ResponseEntity[AnyRef](null,responseHeaders,HttpStatus.CREATED)
     }
 
+    @RequestMapping(value=Array("/polls/{pollId}"), method=Array(RequestMethod.GET))
+    def getPoll(@PathVariable pollId: Long): ResponseEntity[Poll] = {
+        val p = Option(pollRepository.findOne(pollId))
+        if(p.isDefined)
+            new ResponseEntity[Poll](p.get, HttpStatus.OK)
+        else
+            new ResponseEntity[Poll](null.asInstanceOf[Poll], HttpStatus.NOT_FOUND)
+    }
+
+    @RequestMapping(value=Array("/polls/{pollId}"), method=Array(RequestMethod.PUT))
+    def updatePoll(@RequestBody poll: Poll, @PathVariable pollId: Long): ResponseEntity[AnyRef] = {
+        pollRepository.save(poll)
+        new ResponseEntity[AnyRef](HttpStatus.OK)
+    }
+
+    @RequestMapping(value=Array("/polls/{pollId}"), method=Array(RequestMethod.DELETE))
+    def deletePoll(@PathVariable pollId: Long): ResponseEntity[AnyRef] = {
+        pollRepository.delete(pollId)
+        new ResponseEntity[AnyRef](HttpStatus.OK)
+    }
 } 
