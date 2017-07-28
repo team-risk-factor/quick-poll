@@ -1,7 +1,6 @@
 package quickpoll.controller
 
-import javax.inject.Inject
-
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpHeaders, HttpStatus, ResponseEntity}
 import org.springframework.web.bind.annotation._
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
@@ -10,7 +9,7 @@ import quickpoll.repository.PollRepository
 
 @RestController
 class PollController {
-    @Inject
+    @Autowired
     val pollRepository: PollRepository = null
 
     @RequestMapping(value=Array("/polls"), method=Array(RequestMethod.GET))
