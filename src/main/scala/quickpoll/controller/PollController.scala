@@ -1,10 +1,13 @@
 package quickpoll.controller
 
+import javax.validation.Valid
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.{HttpHeaders, HttpStatus, ResponseEntity}
 import org.springframework.web.bind.annotation._
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import quickpoll.domain.Poll
+import quickpoll.exception.ResourceNotFoundException
 import quickpoll.repository.PollRepository
 
 @RestController
@@ -19,7 +22,7 @@ class PollController {
     }
 
     @RequestMapping(value=Array("/polls"), method=Array(RequestMethod.POST))
-    def createPoll(@RequestBody poll: Poll): ResponseEntity[AnyRef] = {
+    def createPoll(@Valid @RequestBody poll: Poll): ResponseEntity[AnyRef] = {
         val newPoll = pollRepository.save(poll)
         val newPollURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newPoll.id).toUri
         val responseHeaders = new HttpHeaders()
@@ -33,7 +36,7 @@ class PollController {
         if(p.isDefined)
             new ResponseEntity[Poll](p.get, HttpStatus.OK)
         else
-            new ResponseEntity[Poll](null.asInstanceOf[Poll], HttpStatus.NOT_FOUND)
+            throw new ResourceNotFoundException(s"Poll with id $pollId not found")
     }
 
     @RequestMapping(value=Array("/polls/{pollId}"), method=Array(RequestMethod.PUT))
